@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Blueprint of views"""
 from api.v1.views import app_views
-from flask import jsonify
+from flask import Response, jsonify
 import models
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -23,13 +23,13 @@ classes = {'Amenity': Amenity,
 
 
 @app_views.route('/status', methods=['GET'])
-def index():
+def index() -> Response:
     '''returns a JSON: "status": "OK" '''
     return jsonify({'status': 'OK'})
 
 
 @app_views.route('/stats', methods=['GET'])
-def get_status():
+def get_status() -> Response:
     """an endpoint that retrieves the number of each objects by type:"""
     data = {}
     for key, val in classes.items():
