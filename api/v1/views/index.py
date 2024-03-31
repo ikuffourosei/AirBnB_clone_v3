@@ -22,13 +22,13 @@ classes = {'Amenity': Amenity,
            }
 
 
-@app_views.route('/status', methods=['GET'])
+@app_views.route('/status', strict_slashes=False, methods=['GET'])
 def index():
     '''returns a JSON: "status": "OK" '''
     return jsonify({'status': 'OK'})
 
 
-@app_views.route('/stats', methods=['GET'])
+@app_views.route('/stats', strict_slashes=False, methods=['GET'])
 def index_stats():
     """an endpoint that retrieves the number of each objects by type:"""
     data = {}
