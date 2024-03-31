@@ -17,13 +17,8 @@ def teardown_session(exception):
 
 
 if __name__ == "__main__":
-    port = 5000
-    host = '0.0.0.0'
-    for items in argv:
-        if "HBNB_API_PORT" in items:
-            result = items.split('=')
-            port = eval(result[1])
-        if "HBNB_API_HOST" in items:
-            result = items.split('=')
-            host = str(result[1])
+    port = next((int(arg.split('=')[1])
+                 for arg in argv if 'HBNB_API_PORT' in arg), 5000)
+    host = next((arg.split('=')[1] for arg in argv if 'HBNB_API_HOST' in arg),
+                '0.0.0.0')
     app.run(host=host, port=port, threaded=True)
