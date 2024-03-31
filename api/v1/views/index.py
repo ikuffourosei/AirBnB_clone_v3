@@ -13,12 +13,12 @@ from models.state import State
 
 
 classes = {'Amenity': Amenity,
-           'BaseModel': BaseModel,
-           'City': City,
-           'Place': Place,
            'Review': Review,
+           'City': City,
+           'State': State,
+           'Place': Place,
            'User': User,
-           'State': State
+           'BaseModel': BaseModel
            }
 
 
@@ -34,6 +34,4 @@ def get_status():
     data = {}
     for key, val in classes.items():
         data[key] = models.storage.count(val)
-    #  sorting the data
-    sorted_data = dict(sorted(data.items()))
-    return jsonify(sorted_data)
+    return jsonify(data)
