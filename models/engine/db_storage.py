@@ -51,6 +51,16 @@ class DBStorage:
                     new_dict[key] = obj
         return (new_dict)
 
+    def get(self, cls, id):
+        """ gets or retrieve an object &
+            Returns the object based on the class and its ID
+            or None if not found
+        """
+        if cls is None or id is None:
+            return None
+        obj = self.__session.query(cls)
+        return obj.get(id)
+
     def new(self, obj):
         """add the object to the current database session"""
         self.__session.add(obj)
@@ -70,6 +80,15 @@ class DBStorage:
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
         self.__session = Session
+
+    def count(self, cls=None) -> int:
+        """returns the count of all objects matching given class
+        or all objects in storage if cls is None
+        """
+        if cls is not None:
+            obj = models.storage.all(cls)
+            return len(obj)
+        return len(models.storage.all())
 
     def close(self):
         """call remove() method on the private session attribute"""
