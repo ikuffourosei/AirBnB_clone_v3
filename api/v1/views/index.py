@@ -25,7 +25,7 @@ classes = {'Amenity': Amenity,
 @app_views.route('/status', methods=['GET'])
 def index():
     '''returns a JSON: "status": "OK" '''
-    return jsonify({'status': 'OK'}), 200
+    return jsonify({'status': 'OK'})
 
 
 @app_views.route('/stats', methods=['GET'])
@@ -38,4 +38,4 @@ def index_stats():
     lista = list(data.keys())
     lista.sort()
     sorted_dict = {k: data[k] for k in lista}
-    return jsonify(sorted_dict), 200
+    return jsonify(sorted_dict)
