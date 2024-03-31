@@ -21,6 +21,7 @@ classes = {'Amenity': Amenity,
            'State': State
            }
 
+
 @app_views.route('/status', methods=['GET'])
 def index():
     '''returns a JSON: "status": "OK" '''
