@@ -29,13 +29,11 @@ def index():
 
 
 @app_views.route('/stats', strict_slashes=False, methods=['GET'])
-def index_stats():
+def get_status():
     """an endpoint that retrieves the number of each objects by type:"""
     data = {}
     for key, val in classes.items():
         data[key] = models.storage.count(val)
     #  sorting the data
-    lista = list(data.keys())
-    lista.sort()
-    sorted_dict = {k: data[k] for k in lista}
-    return jsonify(sorted_dict)
+    sorted_data = dict(sorted(data.items()))
+    return jsonify(sorted_data)
