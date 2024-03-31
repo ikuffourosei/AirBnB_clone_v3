@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Starting a Flask Application"""
-from sys import argv
 from flask import Flask
 from models import storage
 from api.v1.views import app_views
