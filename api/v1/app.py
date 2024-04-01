@@ -9,7 +9,7 @@ import os
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
-CORS(app, resources="/*", origin="0.0.0.0")
+CORS(app, resources="/api/*", origin="0.0.0.0")
 
 
 @app.teardown_appcontext
