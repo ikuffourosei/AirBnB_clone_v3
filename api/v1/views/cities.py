@@ -9,7 +9,7 @@ from models.state import State
 from models.city import City
 
 
-@app_views.route('/states/<string:state_id>/cities', methods=['GET', 'POST'],
+@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'],
                  strict_slashes=False)
 def cities(state_id):
     """Create a new view for City objects that handles all default
@@ -31,7 +31,7 @@ def cities(state_id):
         return jsonify(new_state.to_dict()), 201
 
 
-@app_views.route('/cities/<string:city_id>',
+@app_views.route('/cities/<city_id>',
                  methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def get_city_id(city_id):
     """Retrieves a city object with a specific id"""
