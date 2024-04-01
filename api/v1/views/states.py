@@ -46,7 +46,7 @@ def create_state():
         abort(404, description='Not a JSON')
     if 'name' not in request.json:
         abort(404, description='Missing name')
-    new_state = State(**request.json)
+    new_state = State(**body_request)
     models.storage.new(new_state)
     models.storage.save()
     return jsonify(new_state.to_dict()), 201
@@ -55,4 +55,16 @@ def create_state():
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
 def update_state(state_id):
     """Updating States"""
-
+    body_response = request.get_json()
+    if not body_response:
+        abort(400, description='Not a JSON')
+    if 'name' not in body_response:
+        abort(400, description='Missing name')
+    state = models.storage.get(State, state_id)
+    if not state:
+        abort(404)
+    for k, v in body_response.items():
+        if k != 'id' and k != 'created_at' and k != 'updated_at':
+            setattr(state, k, v)
+    state.save()
+    return jsonify(state.to_dict()), 200
