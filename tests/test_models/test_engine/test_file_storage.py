@@ -113,7 +113,7 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
-    
+
     def test_count(self):
         """Test that the type of return value of count of filestorage is int"""
         self.assertIs(type(models.storage.count(cls=None)), int)
