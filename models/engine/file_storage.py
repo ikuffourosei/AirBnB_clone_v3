@@ -40,9 +40,8 @@ class FileStorage:
             or None if not found
         """
         if cls and id:
-            all_object = self.all(cls)
             key_param = cls.__name__ + '.' + id
-            return all_object.get(key_param)
+            return self.__objects.get(key_param)
         return None
 
     def new(self, obj) -> None:
@@ -70,7 +69,7 @@ class FileStorage:
             pass
 
     def delete(self, obj=None) -> None:
-        """delete obj from __objects if it’s inside"""
+        """delete obj from __objects if it is inside"""
         if obj is not None:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:

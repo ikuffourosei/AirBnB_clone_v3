@@ -3,7 +3,8 @@
 route for handling Amenity objects and operations
 """
 from flask import jsonify, abort, request
-from api.v1.views import app_views, storage
+from api.v1.views import app_views
+import models
 from models.amenity import Amenity
 
 
@@ -14,7 +15,7 @@ def amenity_get_all():
     :return: json of all states
     """
     am_list = []
-    am_obj = storage.all("Amenity")
+    am_obj = models.storage.all("Amenity")
     for obj in am_obj.values():
         am_list.append(obj.to_json())
 
@@ -50,7 +51,7 @@ def amenity_by_id(amenity_id):
     :return: state obj with the specified id or error
     """
 
-    fetched_obj = storage.get("Amenity", str(amenity_id))
+    fetched_obj = models.storage.get("Amenity", str(amenity_id))
 
     if fetched_obj is None:
         abort(404)
@@ -69,7 +70,7 @@ def amenity_put(amenity_id):
     am_json = request.get_json(silent=True)
     if am_json is None:
         abort(400, 'Not a JSON')
-    fetched_obj = storage.get("Amenity", str(amenity_id))
+    fetched_obj = models.storage.get("Amenity", str(amenity_id))
     if fetched_obj is None:
         abort(404)
     for key, val in am_json.items():
@@ -88,12 +89,12 @@ def amenity_delete_by_id(amenity_id):
     :return: empty dict with 200 or 404 if not found
     """
 
-    fetched_obj = storage.get("Amenity", str(amenity_id))
+    fetched_obj = models.storage.get("Amenity", str(amenity_id))
 
     if fetched_obj is None:
         abort(404)
 
-    storage.delete(fetched_obj)
-    storage.save()
+    models.storage.delete(fetched_obj)
+    models.storage.save()
 
     return jsonify({})

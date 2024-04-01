@@ -3,7 +3,8 @@
 route for handling State objects and operations
 """
 from flask import jsonify, abort, request
-from api.v1.views import app_views, storage
+from api.v1.views import app_views
+import models
 from models.city import City
 
 
@@ -15,7 +16,7 @@ def city_by_state(state_id):
     :return: json of all cities in a state or 404 on error
     """
     city_list = []
-    state_obj = storage.get("State", state_id)
+    state_obj = models.storage.get("State", state_id)
 
     if state_obj is None:
         abort(404)
@@ -37,7 +38,7 @@ def city_create(state_id):
     if city_json is None:
         abort(400, 'Not a JSON')
 
-    if not storage.get("State", str(state_id)):
+    if not models.storage.get("State", str(state_id)):
         abort(404)
 
     if "name" not in city_json:
@@ -62,7 +63,7 @@ def city_by_id(city_id):
     :return: city obj with the specified id or error
     """
 
-    fetched_obj = storage.get("City", str(city_id))
+    fetched_obj = models.storage.get("City", city_id)
 
     if fetched_obj is None:
         abort(404)
@@ -80,7 +81,7 @@ def city_put(city_id):
     city_json = request.get_json(silent=True)
     if city_json is None:
         abort(400, 'Not a JSON')
-    fetched_obj = storage.get("City", str(city_id))
+    fetched_obj = models.storage.get("City", str(city_id))
     if fetched_obj is None:
         abort(404)
     for key, val in city_json.items():
@@ -99,12 +100,12 @@ def city_delete_by_id(city_id):
     :return: empty dict with 200 or 404 if not found
     """
 
-    fetched_obj = storage.get("City", str(city_id))
+    fetched_obj = models.storage.get("City", str(city_id))
 
     if fetched_obj is None:
         abort(404)
 
-    storage.delete(fetched_obj)
-    storage.save()
+    models.storage.delete(fetched_obj)
+    models.storage.save()
 
     return jsonify({})
