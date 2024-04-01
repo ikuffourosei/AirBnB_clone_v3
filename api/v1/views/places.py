@@ -6,6 +6,8 @@ from flask import request, jsonify, abort
 from models.place import Place
 from models.city import City
 from models.user import User
+from models.amenity import Amenity
+from models.state import State
 import models
 
 
@@ -58,3 +60,48 @@ def place_modify(place_id):
                 setattr(place, key, val)
         models.storage.save()
         return jsonify(place.to_dict())
+
+
+@app_views.route('/places_search',methods=['GET'], srtict_slashes=False)
+def search_place():
+    """Search for place according to passed data"""
+    search = request.get_json()
+    done =  False
+    if not search:
+        abort(404, description='Not a JSON')
+    if search == {}:
+        return jsonify(models.storage.all(Place))
+    elif search != {}:
+        options = ['state', 'cities', 'amenities']
+        for key, val in search.items():
+            if key in options and key == 'state':
+                state = models.storage.get(State, val)
+                st_cities = [items.to_dict() for items in state.cities]
+                city_ids = [items['id'] for items in st_cities]
+                st_ct = [models.storage.get(City, items) for items in city_ids]
+                st_ct = dict(st_ct)
+                state_places = [place.to_dict() for place in st_ct.places]
+                done = True
+            if key in options and key == 'cities':
+                city = models.storage.get(City, val)
+                city_place = [place.to_dict() for place in city.places]
+                done = True
+            if key in options and key == 'amenities':
+                #  to be implemented
+                pass
+        
+        if done:
+            if 'states' in search.keys() and 'cities' not in search.keys():
+                return jsonify(state_places)
+            elif 'cities' in search.keys() and 'states' not in search.keys():
+                return jsonify(city_place)
+            elif 'states' in search.keys() and 'cities' in search.keys():
+                result = []
+                result.append(state_places)
+                result.append(city_place)
+                return jsonify(result)
+                
+
+                    
+
+
