@@ -62,11 +62,11 @@ def place_modify(place_id):
         return jsonify(place.to_dict())
 
 
-@app_views.route('/places_search',methods=['GET'], srtict_slashes=False)
+@app_views.route('/places_search', methods=['POST'], srtict_slashes=False)
 def search_place():
     """Search for place according to passed data"""
     search = request.get_json()
-    done =  False
+    done = False
     if not search:
         abort(404, description='Not a JSON')
     if search == {}:
@@ -89,7 +89,7 @@ def search_place():
             if key in options and key == 'amenities':
                 #  to be implemented
                 pass
-        
+
         if done:
             if 'states' in search.keys() and 'cities' not in search.keys():
                 return jsonify(state_places)
@@ -100,8 +100,3 @@ def search_place():
                 result.append(state_places)
                 result.append(city_place)
                 return jsonify(result)
-                
-
-                    
-
-
