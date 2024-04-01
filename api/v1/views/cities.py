@@ -2,11 +2,11 @@
 """
 route for handling State objects and operations
 """
-from flask import jsonify, abort, request
+from flask import Blueprint, jsonify, abort, request
 from api.v1.views import app_views
 from models import storage
-from models.city import City
 from models.state import State
+from models.city import City
 
 
 @app_views.route('/states/<string:state_id>/cities', methods=['GET', 'POST'],
