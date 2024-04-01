@@ -27,42 +27,32 @@ def get_state(state_id) -> Response:
                  strict_slashes=False)
 def delete_state(state_id):
     """Deletes a state using the state_id"""
-    key = State.__name__ + '.' + state_id
     all_objects = models.storage.all()
     state = models.storage.get(State, state_id)
     if state is None:
         abort(404)
-    if state and state in all_objects.values():
-        del all_objects[key]
-        models.storage.save()
-        return jsonify('{}'), 200
+    for items in all_objects:
+        if items.id == state_id:
+            models.storage.delete(State)
+            models.storage.save()
+            return jsonify('{}'), 200
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def create_state():
     """Creates a new State"""
-    if not request.is_json:
-        abort(400, 'Not a JSON')
-    elif 'name' not in request.json:
-        abort(400, 'Missing name')
-
+    body_request = request.get_json()
+    if not body_request:
+        abort(404, description='Not a JSON')
+    if 'name' not in request.json:
+        abort(404, description='Missing name')
     new_state = State(**request.json)
     models.storage.new(new_state)
     models.storage.save()
-
     return jsonify(new_state.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
 def update_state(state_id):
     """Updating States"""
-    if not request.is_json:
-        abort(404, 'Not a JSON')
-    elif 'name' not in request.json:
-        abort(404, 'Missing name')
-    state = models.storage.get(State, state_id)
-    if state is None:
-        abort(404)
-    state['name'] = request.get_json().get('name')
-    models.storage.save()
-    return jsonify(state.to_dict()), 200
+
