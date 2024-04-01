@@ -63,47 +63,34 @@ def place_modify(place_id):
 
 
 @app_views.route('/places_search', methods=['POST'], strict_slashes=False)
-def search_place():
-    """Search for place according to passed data"""
-    search = request.get_json()
-    if not search:
+def places_search():
+    """Search for places based on criteria in request body"""
+    body_request = request.get_json()
+    if not body_request:
         abort(400, description='Not a JSON')
-    if search == {}:
-        all_places = models.storage.all(Place).values()
-        places = [place.to_dict() for place in all_places]
-        return jsonify(places)
-    state_places = []
-    pl_city = []
-    amenities_places = []
-    options = ['states', 'cities', 'amenities']
-    for key, val in search.items():
-        if key == 'states':
-            for state_id in val:
-                state = models.storage.get(State, state_id)
-                if state:
-                    state_places.extend([place.to_dict()
-                                         for city in state.cities
-                                         for place in city.places])
-        elif key == 'cities':
-            for city_id in val:
-                city = models.storage.get(City, city_id)
-                if city:
-                    pl_city.extend([place.to_dict() for place in city.places])
-        elif key == 'amenities':
-            for amenity_id in val:
-                amenity = models.storage.get(Amenity, amenity_id)
-                if amenity:
-                    amenities_places.extend([place.to_dict() for place in
-                                             models.storage.all(Place).values()
-                                             if amenity in place.amenities])
-    result = []
-    if 'states' in search and 'cities' in search:
-        result = [place for place in state_places if place in pl_city]
-    elif 'states' in search:
-        result = state_places
-    elif 'cities' in search:
-        result = pl_city
-    if 'amenities' in search:
-        result = [place for place in result if place in amenities_places]
 
-    return jsonify(result)
+    states = body_request.get('states', [])
+    cities = body_request.get('cities', [])
+    amenities = body_request.get('amenities', [])
+
+    places = []
+    if not states and not cities:
+        places = models.storage.all(Place).values()
+    else:
+        for state_id in states:
+            state = models.storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    if city.id not in cities:
+                        cities.append(city.id)
+
+        for city_id in cities:
+            city = models.storage.get(City, city_id)
+            if city:
+                places.extend(city.places)
+
+    if amenities:
+        places = [place for place in places if all(amenity_id in place.amenities for amenity_id in amenities)]
+
+    places_dict = [place.to_dict() for place in places]
+    return jsonify(places_dict)
