@@ -3,7 +3,7 @@
 route for handling State objects and operations
 """
 from flask import jsonify, abort, request
-from api.v1.views import app_views,
+from api.v1.views import app_views
 from models import storage
 from models.state import State
 from models.city import City
