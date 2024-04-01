@@ -55,9 +55,9 @@ def update_state(state_id):
     body_response = request.get_json()
     if not body_response:
         abort(400, description='Not a JSON')
-    if 'name' not in body_response:
-        abort(400, description='Missing name')
-    state = models.storage.get(State, state_id)
+    #if 'name' not in body_response:
+    #    abort(400, description='Missing name')
+    state = models.storage.get(State, str(state_id))
     if not state:
         abort(404)
     for k, v in body_response.items():
