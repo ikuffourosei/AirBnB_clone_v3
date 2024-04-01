@@ -30,4 +30,4 @@ class User(BaseModel, Base):
         super().__init__(*args, **kwargs)
         if 'password' in kwargs:
             passcode = kwargs['password']
-            self.password = hashlib.md5(passcode.encode())
+            self.password = hashlib.md5(passcode.encode()).hexdigest()
