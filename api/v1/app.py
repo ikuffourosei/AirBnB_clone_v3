@@ -11,7 +11,7 @@ app.register_blueprint(app_views)
 
 
 @app.teardown_appcontext
-def teardown_session(exception):
+def teardown_session(exception) -> None:
     """close database session"""
     storage.close()
 
