@@ -17,7 +17,7 @@ def get_states() -> Response:
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
 def get_state(state_id) -> Response:
     """Retrieves a state according to the state_id passed"""
-    state_objects = models.storage.get(State, state_id)
+    state_objects = models.storage.get(State, str(state_id))
     if state_objects is None:
         abort(404)
     return jsonify(state_objects.to_dict())
@@ -27,7 +27,7 @@ def get_state(state_id) -> Response:
                  strict_slashes=False)
 def delete_state(state_id):
     """Deletes a state using the state_id"""
-    state = models.storage.get(State, state_id)
+    state = models.storage.get("State", state_id)
     if state is None:
         abort(404)
     models.storage.delete(state)
@@ -38,14 +38,14 @@ def delete_state(state_id):
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def create_state():
     """Creates a new State"""
-    body_request = request.get_json()
+    body_request = request.get_json(silent=True)
     if not body_request:
-        abort(404, description='Not a JSON')
+        abort(400, description="Not a JSON")
     if 'name' not in request.json:
-        abort(404, description='Missing name')
+        abort(400, description="Missing name")
     new_state = State(**body_request)
     models.storage.new(new_state)
-    models.storage.save()
+    new_state.save()
     return jsonify(new_state.to_dict()), 201
 
 
