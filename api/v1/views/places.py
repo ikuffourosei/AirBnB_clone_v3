@@ -90,7 +90,10 @@ def places_search():
                 places.extend(city.places)
 
     if amenities:
-        places = [place for place in places if all(amenity_id in place.amenities for amenity_id in amenities)]
+        places = [place for place in places if all(amenity_id
+                                                   in place.amenities
+                                                   for amenity_id in
+                                                   amenities)]
 
     places_dict = [place.to_dict() for place in places]
     return jsonify(places_dict)
