@@ -15,7 +15,7 @@ def cities(state_id):
     """Create a new view for City objects that handles all default
     RestFul API actions.
     """
-    state = storage.get('State', state_id)
+    state = storage.get(State, state_id)
     if state is None:
         abort(404)
     if request.method == 'GET':
@@ -35,13 +35,13 @@ def cities(state_id):
                  methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def get_city_id(city_id):
     """Retrieves a city object with a specific id"""
-    city = storage.get('City', city_id)
+    city = storage.get(City, city_id)
     if city is None:
         abort(404)
     elif request.method == 'GET':
         return jsonify(city.to_dict())
     elif request.method == 'DELETE':
-        city = storage.get('City', city_id)
+        city = storage.get(City, city_id)
         storage.delete(city)
         storage.save()
         return jsonify({}), 200
