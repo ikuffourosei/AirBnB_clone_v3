@@ -27,15 +27,12 @@ def get_state(state_id) -> Response:
                  strict_slashes=False)
 def delete_state(state_id):
     """Deletes a state using the state_id"""
-    all_objects = models.storage.all()
     state = models.storage.get(State, state_id)
     if state is None:
         abort(404)
-    for items in all_objects:
-        if items.id == state_id:
-            models.storage.delete(State)
-            models.storage.save()
-            return jsonify('{}'), 200
+    models.storage.delete(state)
+    models.storage.save()
+    return jsonify('{}'), 200
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
