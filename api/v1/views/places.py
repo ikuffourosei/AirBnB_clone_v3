@@ -5,7 +5,9 @@ from api.v1.views import app_views
 from flask import request, jsonify, abort
 from models.place import Place
 from models.city import City
+from models.state import State
 from models.user import User
+from models.amenity import Amenity
 import models
 
 
@@ -58,3 +60,50 @@ def place_modify(place_id):
                 setattr(place, key, val)
         models.storage.save()
         return jsonify(place.to_dict())
+
+
+@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
+def search_place():
+    """Search for place according to passed data"""
+    search = request.get_json()
+    if not search:
+        abort(400, description='Not a JSON')
+    if search == {}:
+        all_places = models.storage.all(Place).values()
+        places = [place.to_dict() for place in all_places]
+        return jsonify(places)
+    state_places = []
+    pl_city = []
+    amenities_places = []
+    options = ['states', 'cities', 'amenities']
+    for key, val in search.items():
+        if key == 'states':
+            for state_id in val:
+                state = models.storage.get(State, state_id)
+                if state:
+                    state_places.extend([place.to_dict()
+                                         for city in state.cities
+                                         for place in city.places])
+        elif key == 'cities':
+            for city_id in val:
+                city = models.storage.get(City, city_id)
+                if city:
+                    pl_city.extend([place.to_dict() for place in city.places])
+        elif key == 'amenities':
+            for amenity_id in val:
+                amenity = models.storage.get(Amenity, amenity_id)
+                if amenity:
+                    amenities_places.extend([place.to_dict() for place in
+                                             models.storage.all(Place).values()
+                                             if amenity in place.amenities])
+    result = []
+    if 'states' in search and 'cities' in search:
+        result = [place for place in state_places if place in pl_city]
+    elif 'states' in search:
+        result = state_places
+    elif 'cities' in search:
+        result = pl_city
+    if 'amenities' in search:
+        result = [place for place in result if place in amenities_places]
+
+    return jsonify(result)
